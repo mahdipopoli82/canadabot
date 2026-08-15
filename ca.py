@@ -11,7 +11,7 @@ from telethon import TelegramClient, events, Button
 # =========================
 API_ID = 8477522
 API_HASH = "366c19cf69e02cad530261ad81212a85"
-BOT_TOKEN = "8785573158:AAGCDAyYsseDlr4ZFGoEaUTYp5KZt873O1o"
+BOT_TOKEN = "8872589476:AAHbkwapuMwG1hqxOwZvWDOLe1jErBbxmMY"
 
 client = TelegramClient(
     "canada_bot",
@@ -697,7 +697,7 @@ async def gmail_handler(event):
 @client.on(events.CallbackQuery(data=b"gmail_delete"))
 async def gmail_delete_handler(event):
     user_id = event.sender_id
-        if not is_allowed(user_id):
+    if not is_allowed(user_id):
         await event.answer("❌ Access Denied", alert=True)
         return
 
