@@ -714,4 +714,4 @@ async def gmail_delete_handler(event):
 # =========================
 print("Bot is running...")
 client.start(bot_token=BOT_TOKEN)
-client.run_until_d
+client.run_until_disconnected()
