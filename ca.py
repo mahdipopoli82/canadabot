@@ -506,26 +506,36 @@ async def get_next(event):
         parse_mode="html"
     )
 
-    # Auto code: check site and send code as text, delete after 15s
+    # Auto code: check site every 2s until code found, send with name, delete after 15s
     if user_auto_code.get(user_id):
         try:
-            await asyncio.sleep(0.5)
-            async with aiohttp.ClientSession() as session:
-                async with session.get(link, timeout=aiohttp.ClientTimeout(total=20)) as resp:
-                    html = await resp.text()
-                    code = extract_code(html)
+            for _ in range(90):  # max 3 minutes (90 x 2s)
+                await asyncio.sleep(2)
+                try:
+                    async with aiohttp.ClientSession() as session:
+                        async with session.get(link, timeout=aiohttp.ClientTimeout(total=15)) as resp:
+                            html = await resp.text()
+                            code = extract_code(html)
 
-                    if code:
-                        code_msg = await client.send_message(
-                            event.chat_id,
-                            f"🔢 Code: <code>{code}</code>",
-                            parse_mode="html"
-                        )
-                        await asyncio.sleep(15)
-                        try:
-                            await code_msg.delete()
-                        except:
-                            pass
+                            if code:
+                                name = await get_canadian_name()
+                                code_msg = await client.send_message(
+                                    event.chat_id,
+                                    f"🧊 <b>CODE READY</b>\n"
+                                    "────────────────\n"
+                                    f"🔢 Code: <code>{code}</code>\n"
+                                    "────────────────\n"
+                                    f"👤 Name:\n<code>{name}</code>",
+                                    parse_mode="html"
+                                )
+                                await asyncio.sleep(15)
+                                try:
+                                    await code_msg.delete()
+                                except:
+                                    pass
+                                return
+                except:
+                    pass
 
         except Exception:
             pass
@@ -687,7 +697,7 @@ async def gmail_handler(event):
 @client.on(events.CallbackQuery(data=b"gmail_delete"))
 async def gmail_delete_handler(event):
     user_id = event.sender_id
-    if not is_allowed(user_id):
+        if not is_allowed(user_id):
         await event.answer("❌ Access Denied", alert=True)
         return
 
